@@ -69,30 +69,37 @@ namespace RepositoryLayer.Services
                 sqlConnection.Close();
             }
         }
+        /// <summary>
+        /// Gets the login.
+        /// </summary>
+        /// <param name="User1">The user1.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException"></exception>
         public string GetLogin(UserLogin User1)
         {
-
             try
             {
                 using (sqlConnection)
                 {
-                    UserResponse detail = new UserResponse();
-                    string query = "select EmailId,Password from UserTable where EmailId=@EmailId and Password=@Password";
-                    SqlCommand command = new SqlCommand(query, sqlConnection);
-
+                    UserModel detail = new UserModel();
+    
+                    SqlCommand command = new SqlCommand("SP_Login", sqlConnection);
+                    command.CommandType = CommandType.StoredProcedure;
                     this.sqlConnection.Open();
-                    command.Parameters.AddWithValue("@EmailID", User1.EmailId);
+                    command.Parameters.AddWithValue("@EmailId", User1.EmailId);
                     command.Parameters.AddWithValue("@Password", User1.Password);
-
+                
                     SqlDataReader reader = command.ExecuteReader();
                     if (reader.HasRows)
                     {
                         while (reader.Read())
                         {
-                            detail.EmailId = Convert.ToString(reader["EmailID"] == DBNull.Value ? default : reader["EmailID"]);
+                            detail.UserId = Convert.ToInt32(reader["UserId"] == DBNull.Value ? default : reader["UserId"]);
+                            detail.EmailId = Convert.ToString(reader["EmailId"] == DBNull.Value ? default : reader["EmailId"]);
                             detail.Password = Convert.ToString(reader["Password"] == DBNull.Value ? default : reader["Password"]);
+                           
                         }
-                        string token = GenerateJWTToken(detail.EmailId);
+                        string token = GenerateJWTToken(detail.EmailId,detail.UserId);
                         return token;
                     }
                     return null;
@@ -100,7 +107,7 @@ namespace RepositoryLayer.Services
             }
             catch (Exception ex)
             {
-                throw new KeyNotFoundException(ex.Message);
+                throw ;
             }
             finally
             {
@@ -108,7 +115,7 @@ namespace RepositoryLayer.Services
             }
         }
 
-        private string GenerateJWTToken(string EmailId)
+        private string GenerateJWTToken(string EmailId,long UserId)
         {
             try
             {
@@ -118,8 +125,8 @@ namespace RepositoryLayer.Services
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                        new Claim(ClaimTypes.Email, EmailId)
-                        //new Claim("UserId",UserId.ToString())
+                        new Claim(ClaimTypes.Email, EmailId),
+                        new Claim("UserId",UserId.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddMinutes(30),
                     SigningCredentials = new SigningCredentials(loginTokenKey, SecurityAlgorithms.HmacSha256Signature)
@@ -158,5 +165,7 @@ namespace RepositoryLayer.Services
             decryptpwd = new String(decoded_char);
             return decryptpwd;
         }
+
+
     }
 }
