@@ -1,10 +1,14 @@
 ﻿using CommonLayer.Model;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using RepositoryLayer.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,16 +16,26 @@ namespace RepositoryLayer.Services
 {
     public class UserRL : IUserRL
     {
+        IConfiguration _config;
+        public UserRL(IConfiguration config)
+        {
+            _config = config;
+        }
         public static string connectionString = @"Data Source = (localdb)\ProjectsV13;Initial Catalog = BookStoreDB; Integrated Security = True; Connect Timeout = 30; Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
         //creating object of sqlconnection class and creating connection with database
         SqlConnection sqlConnection = new SqlConnection(connectionString);
+        /// <summary>
+        /// Registrations the specified user.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
         public UserResponse Registration(UserModel user)
         {
             try
             {
                 using (this.sqlConnection)
                 {
-                    
+
                     SqlCommand command = new SqlCommand("SP_AddNewUser", this.sqlConnection);
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@FullName", user.FullName);
@@ -37,7 +51,7 @@ namespace RepositoryLayer.Services
                         newUser.EmailId = user.EmailId;
                         newUser.Password = user.Password;
                         newUser.MobileNumber = user.MobileNumber;
-         
+
                         return newUser;
                     }
                     else
@@ -55,6 +69,94 @@ namespace RepositoryLayer.Services
                 sqlConnection.Close();
             }
         }
+        public string GetLogin(UserLogin User1)
+        {
 
+            try
+            {
+                using (sqlConnection)
+                {
+                    UserResponse detail = new UserResponse();
+                    string query = "select EmailId,Password from UserTable where EmailId=@EmailId and Password=@Password";
+                    SqlCommand command = new SqlCommand(query, sqlConnection);
+
+                    this.sqlConnection.Open();
+                    command.Parameters.AddWithValue("@EmailID", User1.EmailId);
+                    command.Parameters.AddWithValue("@Password", User1.Password);
+
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            detail.EmailId = Convert.ToString(reader["EmailID"] == DBNull.Value ? default : reader["EmailID"]);
+                            detail.Password = Convert.ToString(reader["Password"] == DBNull.Value ? default : reader["Password"]);
+                        }
+                        string token = GenerateJWTToken(detail.EmailId);
+                        return token;
+                    }
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new KeyNotFoundException(ex.Message);
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+
+        private string GenerateJWTToken(string EmailId)
+        {
+            try
+            {
+                var loginTokenHandler = new JwtSecurityTokenHandler();
+                var loginTokenKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config[("Jwt:key")]));
+                var loginTokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim(ClaimTypes.Email, EmailId)
+                        //new Claim("UserId",UserId.ToString())
+                    }),
+                    Expires = DateTime.UtcNow.AddMinutes(30),
+                    SigningCredentials = new SigningCredentials(loginTokenKey, SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = loginTokenHandler.CreateToken(loginTokenDescriptor);
+                return loginTokenHandler.WriteToken(token);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public string encryptpass(string Password)
+        {
+            string msg = "";
+            byte[] encode = new byte[Password.Length];
+            encode = Encoding.UTF8.GetBytes(Password);
+            msg = Convert.ToBase64String(encode); //ToBase64String(Byte[]) Converts an array of 8-bit unsigned integers to its equivalent string representation that is encoded with base-64 digits
+            return msg;
+        }
+        /// <summary>
+        /// Decryptpasses the specified encryptpwd.
+        /// </summary>
+        /// <param name="encryptpwd">The encryptpwd.</param>
+        /// <returns></returns>
+        private string Decryptpass(string encryptpwd)
+        {
+            string decryptpwd = string.Empty;
+            UTF8Encoding encodepwd = new UTF8Encoding();
+            Decoder Decode = encodepwd.GetDecoder();
+            byte[] todecode_byte = Convert.FromBase64String(encryptpwd);
+            int charCount = Decode.GetCharCount(todecode_byte, 0, todecode_byte.Length);
+            char[] decoded_char = new char[charCount];
+            Decode.GetChars(todecode_byte, 0, todecode_byte.Length, decoded_char, 0);
+            decryptpwd = new String(decoded_char);
+            return decryptpwd;
+        }
     }
 }

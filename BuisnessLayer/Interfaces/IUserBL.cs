@@ -10,5 +10,6 @@ namespace BuisnessLayer.Interfaces
     public interface IUserBL
     {
         public UserResponse Registration(UserModel user);   //to post new registration data   
+        public string GetLogin(UserLogin User1);
     }
 }

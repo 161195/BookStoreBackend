@@ -10,5 +10,6 @@ namespace RepositoryLayer.Interfaces
     public interface IUserRL
     {
         public UserResponse Registration(UserModel user);   //to post new registration data   
+        public string GetLogin(UserLogin User1);
     }
 }

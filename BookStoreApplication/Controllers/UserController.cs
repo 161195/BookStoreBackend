@@ -38,6 +38,23 @@ namespace BookStoreApplication.Controllers
                 return this.BadRequest(new { success = false, message = ex.InnerException ,msg = ex.Message });
             }
         }
+        [HttpPost("Login")]
+        public IActionResult GetLogin(UserLogin user1)
+        {
+            try
+            {
+                string result = this.BL.GetLogin(user1);
+                if (result == null)
+                {
+                    return BadRequest(new { Success = false, message = "Email or Password Not Found" });
+                }
+                return Ok(new { Success = true, message = "Login Successful", UserLoginInfo = result });
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(new { Success = false, message = e.Message });
+            }
+        }
 
     }
 }
