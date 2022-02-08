@@ -55,6 +55,24 @@ namespace BookStoreApplication.Controllers
                 return this.BadRequest(new { Success = false, message = e.Message });
             }
         }
+        [HttpPost]
+        [Route("forgetPassword")]
+        public IActionResult ForgetPassword(ForgetPasswordModel model)
+        {
+            try
+            { 
+                string result = this.BL.ForgetPassword(model);
+                if (result !=null)
+                {
+                    return Ok(new { Success = true, message = "Password Reset Mail Sent" });
+                }
+                return BadRequest(new { Success = false, message = "Invalid Credentials for reset password" });
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
     }
 }

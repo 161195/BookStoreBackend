@@ -114,7 +114,12 @@ namespace RepositoryLayer.Services
                 this.sqlConnection.Close();
             }
         }
-
+        /// <summary>
+        /// Generates the JWT token.
+        /// </summary>
+        /// <param name="EmailId">The email identifier.</param>
+        /// <param name="UserId">The user identifier.</param>
+        /// <returns></returns>
         private string GenerateJWTToken(string EmailId,long UserId)
         {
             try
@@ -164,6 +169,48 @@ namespace RepositoryLayer.Services
             Decode.GetChars(todecode_byte, 0, todecode_byte.Length, decoded_char, 0);
             decryptpwd = new String(decoded_char);
             return decryptpwd;
+        }
+        /// <summary>
+        /// Forgets the password.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns></returns>
+        public string ForgetPassword(ForgetPasswordModel model)
+        {
+            try
+            {
+                using (sqlConnection)
+                {
+                    UserModel detail = new UserModel();
+                    SqlCommand command = new SqlCommand("SP_ForgetPassword", sqlConnection);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    this.sqlConnection.Open();
+                    command.Parameters.AddWithValue("@EmailId", model.EmailId);
+
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            detail.EmailId = Convert.ToString(reader["EmailId"] == DBNull.Value ? default : reader["EmailId"]);
+                            detail.UserId = Convert.ToInt32(reader["UserId"] == DBNull.Value ? default : reader["UserId"]);
+                        }
+                        string token = GenerateJWTToken(detail.EmailId, detail.UserId);
+                        new MsmqModel().MsmqSender(token);
+                        return token;
+                    }
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
         }
 
 

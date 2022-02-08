@@ -38,5 +38,16 @@ namespace BuisnessLayer.Services
                 throw;
             }
         }
+        public string ForgetPassword(ForgetPasswordModel model)
+        {
+            try
+            {
+                return this.UserRL.ForgetPassword(model);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }
