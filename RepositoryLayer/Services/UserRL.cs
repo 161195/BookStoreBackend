@@ -40,7 +40,7 @@ namespace RepositoryLayer.Services
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@FullName", user.FullName);
                     command.Parameters.AddWithValue("@EmailId", user.EmailId);
-                    command.Parameters.AddWithValue("@Password", user.Password);
+                    command.Parameters.AddWithValue("@Password", encryptpass(user.Password));
                     command.Parameters.AddWithValue("@MobileNumber", user.MobileNumber);
                     sqlConnection.Open();
                     int result = command.ExecuteNonQuery();
@@ -49,7 +49,6 @@ namespace RepositoryLayer.Services
                         UserResponse newUser = new UserResponse();
                         newUser.FullName = user.FullName;
                         newUser.EmailId = user.EmailId;
-                        newUser.Password = user.Password;
                         newUser.MobileNumber = user.MobileNumber;
 
                         return newUser;
@@ -87,7 +86,7 @@ namespace RepositoryLayer.Services
                     command.CommandType = CommandType.StoredProcedure;
                     this.sqlConnection.Open();
                     command.Parameters.AddWithValue("@EmailId", User1.EmailId);
-                    command.Parameters.AddWithValue("@Password", User1.Password);
+                    command.Parameters.AddWithValue("@Password", encryptpass(User1.Password));
                 
                     SqlDataReader reader = command.ExecuteReader();
                     if (reader.HasRows)
@@ -212,7 +211,37 @@ namespace RepositoryLayer.Services
                 this.sqlConnection.Close();
             }
         }
+        public bool ResetPassword(ResetPasswordModel model, string email)
+        {
+            try
+            {
+                using (sqlConnection)
+                {
+                    if (model.NewPassword == model.ConfirmPassword)
+                    {
+                        SqlCommand command = new SqlCommand("SP_ResetPassword", sqlConnection);
+                        command.CommandType = CommandType.StoredProcedure;
 
-
+                        command.Parameters.AddWithValue("@EmailId", email);
+                        command.Parameters.AddWithValue("@NewPassword", encryptpass(model.NewPassword));
+                        this.sqlConnection.Open();
+                        int result = command.ExecuteNonQuery();
+                        this.sqlConnection.Close();
+                        if (result >= 0)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
+
+
 }
+

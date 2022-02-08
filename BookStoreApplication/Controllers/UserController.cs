@@ -1,10 +1,12 @@
 ﻿using BuisnessLayer.Interfaces;
 using CommonLayer.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace BookStoreApplication.Controllers
@@ -71,6 +73,25 @@ namespace BookStoreApplication.Controllers
             catch (Exception)
             {
                 throw;
+            }
+        }
+        [Authorize]
+        [HttpPut("ResetPassword")]
+        public IActionResult ResetPassword(ResetPasswordModel model)
+        {
+            try
+            {
+                string email = User.FindFirst(ClaimTypes.Email).Value.ToString();
+                bool resetPassword = BL.ResetPassword(model, email);
+                if (resetPassword)
+                {
+                    return Ok(new { Success = true, message = "Password Reset Successful" });
+                }
+                return NotFound(new { Success = false, message = "New Password not match with confirm password" });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
         }
 

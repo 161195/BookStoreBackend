@@ -12,5 +12,6 @@ namespace BuisnessLayer.Interfaces
         public UserResponse Registration(UserModel user);   //to post new registration data   
         public string GetLogin(UserLogin User1);
         public string ForgetPassword(ForgetPasswordModel model);
+        public bool ResetPassword(ResetPasswordModel model, string email);
     }
 }
