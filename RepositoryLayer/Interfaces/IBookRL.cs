@@ -15,5 +15,6 @@ namespace RepositoryLayer.Interfaces
         public BookResponse UpdateBookDetails(long BookId, BookUpdate model, long UserId);
         public BookResponse GetBookWithBookId(long bookId, long jwtUserId);
         public BookResponse ImageUpdate(long bookId, IFormFile bookImage, long jwtUserId);
+        public BookResponse RatingsUpdate(long bookId, RatingUpdate model, long jwtUserId);
     }
 }

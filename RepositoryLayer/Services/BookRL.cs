@@ -235,5 +235,34 @@ namespace RepositoryLayer.Services
                 throw new KeyNotFoundException(ex.Message);
             }
         }
+        public BookResponse RatingsUpdate(long bookId, RatingUpdate model, long jwtUserId)
+        {
+            try
+            {
+                using (sqlConnection)
+                {
+                    SqlCommand command = new("spRatingsUpdate", sqlConnection);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@BookId", bookId);
+                    command.Parameters.AddWithValue("@TotalRating", model.TotalRating);
+                    command.Parameters.AddWithValue("@NoOfPeopleRated", model.NoOfPeopleRated);
+                    command.Parameters.AddWithValue("@UserId", jwtUserId);
+                    this.sqlConnection.Open();
+                    int result = command.ExecuteNonQuery();
+                    this.sqlConnection.Close();
+                    if (result >= 0)
+                    {
+                        return GetWithBookId(bookId, jwtUserId);
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
     }
 }

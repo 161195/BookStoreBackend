@@ -64,5 +64,17 @@ namespace BuisnessLayer.Services
                 throw;
             }
         }
+        public BookResponse RatingsUpdate(long bookId, RatingUpdate model, long jwtUserId)
+        {
+            try
+            {
+                return this.BookRL.RatingsUpdate(bookId, model, jwtUserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
     }
 }

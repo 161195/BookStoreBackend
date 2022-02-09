@@ -101,5 +101,24 @@ namespace BookStoreApplication.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        [HttpPut("{bookId}/ratings")]
+        public IActionResult RatingsUpdate(long bookId, RatingUpdate model)
+        {
+            try
+            {
+                long jwtUserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
+                BookResponse book = BL.RatingsUpdate(bookId, model, jwtUserId);
+                if (book == null)
+                {
+                    return NotFound(new { Success = false, message = "Invalid BookId to update ratings" });
+                }
+
+                return Ok(new { Success = true, message = "Book Ratings Updated Successfully ", book });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }
