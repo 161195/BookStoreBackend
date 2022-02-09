@@ -120,5 +120,43 @@ namespace BookStoreApplication.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        [HttpGet]
+        public IActionResult GetAllBooks()
+        {
+            try
+            {
+                long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
+                List<BookResponse> book = BL.GetAllBook(UserId);
+                if (book == null)
+                {
+                    return NotFound(new { Success = false, message = "Invalid BookId" });
+                }
+
+                return Ok(new { Success = true, message = "Retrived Books successfully ", book });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+        [HttpDelete]
+        public IActionResult BookDelete(long bookId)
+        {
+            try
+            {
+                long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
+                bool book = BL.DeletetWithBookId(bookId,UserId);
+                if (book == false)
+                {
+                    return NotFound(new { Success = false, message = "Invalid BookId" });
+                }
+
+                return Ok(new { Success = true, message = "Book deleted successfully ", book });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }

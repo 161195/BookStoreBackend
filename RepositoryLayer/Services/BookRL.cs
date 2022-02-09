@@ -131,66 +131,91 @@ namespace RepositoryLayer.Services
         }
         public BookResponse GetBookWithBookId(long bookId, long jwtUserId)
         {
-            BookResponse responseModel = new();
-            SqlCommand command = new("spGetBookWithBookId", sqlConnection);
-            command.CommandType = CommandType.StoredProcedure;
-
-            this.sqlConnection.Open();
-            command.Parameters.AddWithValue("@BookId", bookId);
-            command.Parameters.AddWithValue("@UserId", jwtUserId);
-            SqlDataReader reader = command.ExecuteReader();
-
-            if (reader.HasRows)
+            try
             {
-                while (reader.Read())
+                BookResponse responseModel = new();
+                SqlCommand command = new("spGetBookWithBookId", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                this.sqlConnection.Open();
+                command.Parameters.AddWithValue("@BookId", bookId);
+                command.Parameters.AddWithValue("@UserId", jwtUserId
+                );
+                 SqlDataReader reader = command.ExecuteReader();
+            
+                if (reader.HasRows)
                 {
-                    responseModel.BookId = Convert.ToInt32(reader["BookId"]);
-                    responseModel.BookName = reader["BookName"].ToString();
-                    responseModel.BookAuthor = reader["BookAuthor"].ToString();
-                    responseModel.TotalRating = Convert.ToInt32(reader["TotalRating"] == DBNull.Value ? default : reader["TotalRating"]);
-                    responseModel.NoOfPeopleRated = Convert.ToInt32(reader["NoOfPeopleRated"] == DBNull.Value ? default : reader["NoOfPeopleRated"]);
-                    responseModel.OriginalPrice = Convert.ToInt32(reader["OriginalPrice"] == DBNull.Value ? default : reader["OriginalPrice"]);
-                    responseModel.DiscountPrice = Convert.ToInt32(reader["DiscountPrice"] == DBNull.Value ? default : reader["DiscountPrice"]);
-                    responseModel.BookImage = reader["BookImage"].ToString();
-                    responseModel.BookQuantity = Convert.ToInt32(reader["BookQuantity"] == DBNull.Value ? default : reader["BookQuantity"]);
-                    responseModel.BookDetails = reader["BookDetails"].ToString();
-                    responseModel.UserId = Convert.ToInt32(reader["UserId"]);
+                    while (reader.Read())
+                    {
+                        responseModel.BookId = Convert.ToInt32(reader["BookId"]);
+                        responseModel.BookName = reader["BookName"].ToString();
+                        responseModel.BookAuthor = reader["BookAuthor"].ToString();
+                        responseModel.TotalRating = Convert.ToInt32(reader["TotalRating"] == DBNull.Value ? default : reader["TotalRating"]);
+                        responseModel.NoOfPeopleRated = Convert.ToInt32(reader["NoOfPeopleRated"] == DBNull.Value ? default : reader["NoOfPeopleRated"]);
+                        responseModel.OriginalPrice = Convert.ToInt32(reader["OriginalPrice"] == DBNull.Value ? default : reader["OriginalPrice"]);
+                        responseModel.DiscountPrice = Convert.ToInt32(reader["DiscountPrice"] == DBNull.Value ? default : reader["DiscountPrice"]);
+                        responseModel.BookImage = reader["BookImage"].ToString();
+                        responseModel.BookQuantity = Convert.ToInt32(reader["BookQuantity"] == DBNull.Value ? default : reader["BookQuantity"]);
+                        responseModel.BookDetails = reader["BookDetails"].ToString();
+                        responseModel.UserId = Convert.ToInt32(reader["UserId"]);
+                    }
+                    return responseModel;
                 }
-                return responseModel;
+                return null;
             }
-            return null;
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
         }
+
 
         public BookResponse GetWithBookId(long bookId, long jwtUserId)
         {
-            BookResponse responseModel = new();
-            SqlCommand command = new("spGetBookWithBookId", sqlConnection);
-            command.CommandType = CommandType.StoredProcedure;
-
-            this.sqlConnection.Open();
-            command.Parameters.AddWithValue("@BookId", bookId);
-            command.Parameters.AddWithValue("@UserId", jwtUserId);
-            SqlDataReader reader = command.ExecuteReader();
-
-            if (reader.HasRows)
+            try
             {
-                while (reader.Read())
+                BookResponse responseModel = new();
+                SqlCommand command = new("spGetBookWithBookId", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                this.sqlConnection.Open();
+                command.Parameters.AddWithValue("@BookId", bookId);
+                command.Parameters.AddWithValue("@UserId", jwtUserId);
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.HasRows)
                 {
-                    responseModel.BookId = Convert.ToInt32(reader["BookId"]);
-                    responseModel.BookName = reader["BookName"].ToString();
-                    responseModel.BookAuthor = reader["BookAuthor"].ToString();
-                    responseModel.TotalRating = Convert.ToInt32(reader["TotalRating"] == DBNull.Value ? default : reader["TotalRating"]);
-                    responseModel.NoOfPeopleRated = Convert.ToInt32(reader["NoOfPeopleRated"] == DBNull.Value ? default : reader["NoOfPeopleRated"]);
-                    responseModel.OriginalPrice = Convert.ToInt32(reader["OriginalPrice"] == DBNull.Value ? default : reader["OriginalPrice"]);
-                    responseModel.DiscountPrice = Convert.ToInt32(reader["DiscountPrice"] == DBNull.Value ? default : reader["DiscountPrice"]);
-                    responseModel.BookImage = reader["BookImage"].ToString();
-                    responseModel.BookQuantity = Convert.ToInt32(reader["BookQuantity"] == DBNull.Value ? default : reader["BookQuantity"]);
-                    responseModel.BookDetails = reader["BookDetails"].ToString();
-                    responseModel.UserId = Convert.ToInt32(reader["UserId"]);
+                    while (reader.Read())
+                    {
+                        responseModel.BookId = Convert.ToInt32(reader["BookId"]);
+                        responseModel.BookName = reader["BookName"].ToString();
+                        responseModel.BookAuthor = reader["BookAuthor"].ToString();
+                        responseModel.TotalRating = Convert.ToInt32(reader["TotalRating"] == DBNull.Value ? default : reader["TotalRating"]);
+                        responseModel.NoOfPeopleRated = Convert.ToInt32(reader["NoOfPeopleRated"] == DBNull.Value ? default : reader["NoOfPeopleRated"]);
+                        responseModel.OriginalPrice = Convert.ToInt32(reader["OriginalPrice"] == DBNull.Value ? default : reader["OriginalPrice"]);
+                        responseModel.DiscountPrice = Convert.ToInt32(reader["DiscountPrice"] == DBNull.Value ? default : reader["DiscountPrice"]);
+                        responseModel.BookImage = reader["BookImage"].ToString();
+                        responseModel.BookQuantity = Convert.ToInt32(reader["BookQuantity"] == DBNull.Value ? default : reader["BookQuantity"]);
+                        responseModel.BookDetails = reader["BookDetails"].ToString();
+                        responseModel.UserId = Convert.ToInt32(reader["UserId"]);
+                    }
+                    return responseModel;
                 }
-                return responseModel;
+                return null;
             }
-            return null;
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+
         }
         /// <summary>
         /// Images the update.
@@ -263,6 +288,78 @@ namespace RepositoryLayer.Services
                 throw;
             }
         }
+        public List<BookResponse> GetAllBook(long UserId)
+        {
+            try
+            {
+                List<BookResponse> responseModel = new();
+                SqlCommand command = new("SP_GetAllBooks", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                this.sqlConnection.Open();
+                command.Parameters.AddWithValue("@UserId", UserId);
+                SqlDataAdapter dataAdapter = new(command);
+                DataTable dataTable = new();
+                dataAdapter.Fill(dataTable);
+                foreach (DataRow dataRow in dataTable.Rows)
+                {
+                    responseModel.Add(new BookResponse
+                         {
+                             BookId = Convert.ToInt32(dataRow["BookId"]),
+                             BookName = Convert.ToString(dataRow["BookName"]),
+                             BookAuthor = Convert.ToString(dataRow["BookAuthor"]),
+                             TotalRating = Convert.ToInt32(dataRow["TotalRating"] == DBNull.Value ? default : dataRow["TotalRating"]),
+                             NoOfPeopleRated = Convert.ToInt32(dataRow["NoOfPeopleRated"] == DBNull.Value ? default : dataRow["NoOfPeopleRated"]),
+                             OriginalPrice = Convert.ToInt32(dataRow["OriginalPrice"] == DBNull.Value ? default : dataRow["OriginalPrice"]),
+                             DiscountPrice = Convert.ToInt32(dataRow["DiscountPrice"] == DBNull.Value ? default : dataRow["DiscountPrice"]),
+                             BookImage = Convert.ToString(dataRow["BookImage"]),
+                             BookQuantity = Convert.ToInt32(dataRow["BookQuantity"] == DBNull.Value ? default : dataRow["BookQuantity"]),
+                             BookDetails = Convert.ToString(dataRow["BookDetails"]),
+                             UserId = Convert.ToInt32(dataRow["UserId"]),
+                         }
+                     );
+                }
+                return responseModel;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+        public bool DeletetWithBookId(long bookId, long UserId)
+        {
+            try
+            {
+                SqlCommand command = new("SP_DeleteBookWithBookId", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@BookId", bookId);
+                command.Parameters.AddWithValue("@UserId", UserId);
+
+                this.sqlConnection.Open();
+                int result = command.ExecuteNonQuery();
+                if (result >= 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+
 
     }
 }

@@ -76,5 +76,29 @@ namespace BuisnessLayer.Services
             }
 
         }
+        public List<BookResponse> GetAllBook(long UserId)
+        {
+            try
+            {
+                return this.BookRL.GetAllBook(UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public bool DeletetWithBookId(long bookId, long UserId)
+        {
+            try
+            {
+                return this.BookRL.DeletetWithBookId(bookId,UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
     }
 }
