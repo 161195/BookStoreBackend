@@ -192,6 +192,14 @@ namespace RepositoryLayer.Services
             }
             return null;
         }
+        /// <summary>
+        /// Images the update.
+        /// </summary>
+        /// <param name="bookId">The book identifier.</param>
+        /// <param name="bookImage">The book image.</param>
+        /// <param name="jwtUserId">The JWT user identifier.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Collections.Generic.KeyNotFoundException"></exception>
         public BookResponse ImageUpdate(long bookId, IFormFile bookImage, long jwtUserId)
         {
             try
