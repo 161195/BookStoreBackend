@@ -27,7 +27,7 @@ namespace BookStoreApplication.Controllers
             try
             {
                 long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
-                BookResponse BookDetails = BL.AddBook(bookDetails, UserId);  
+                BookResponse BookDetails = BL.AddBook(bookDetails, UserId);
                 if (BookDetails != null)
                 {
                     return this.Ok(new { Success = true, message = "book added Successfully", BookDetails });
@@ -42,6 +42,64 @@ namespace BookStoreApplication.Controllers
                 return this.BadRequest(new { success = false, message = ex.InnerException, msg = ex.Message });
             }
         }
+        [HttpPut("{BookId}")]
+        public IActionResult UpdateBookDetails(long BookId, BookUpdate model)
+        {
+            try
+            {
+                long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
 
+                BookResponse book = BL.UpdateBookDetails(BookId, model, UserId);
+                if (book == null)
+                {
+                    return NotFound(new { Success = false, message = "Invalid BookId to update" });
+                }
+
+                return Ok(new { Success = true, message = "Book Updated Successfully ", book });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+        [HttpGet("{bookId}")]
+        public IActionResult GetBookWithBookId(long bookId)
+        {
+            try
+            {
+                long jwtUserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
+
+                BookResponse book = BL.GetBookWithBookId(bookId, jwtUserId);
+                if (book == null)
+                {
+                    return NotFound(new { Success = false, message = "Invalid BookId" });
+                }
+
+                return Ok(new { Success = true, message = "Retrived Book BooId ", book });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+        [HttpPut("{bookId}/image")]
+        public IActionResult ImageUpdate(long bookId, IFormFile bookImage)
+        {
+            try
+            {
+                long jwtUserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
+                BookResponse book = BL.ImageUpdate(bookId, bookImage, jwtUserId);
+                if (book == null)
+                {
+                    return NotFound(new { Success = false, message = "Invalid BookId to update image" });
+                }
+
+                return Ok(new { Success = true, message = "BookImage Updated Successfully ", book });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }

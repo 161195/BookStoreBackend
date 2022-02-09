@@ -211,6 +211,12 @@ namespace RepositoryLayer.Services
                 this.sqlConnection.Close();
             }
         }
+        /// <summary>
+        /// Resets the password.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <param name="email">The email.</param>
+        /// <returns></returns>
         public bool ResetPassword(ResetPasswordModel model, string email)
         {
             try
