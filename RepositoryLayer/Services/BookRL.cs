@@ -18,7 +18,6 @@ namespace RepositoryLayer.Services
     public class BookRL : IBookRL
     {
         private readonly IConfiguration config;
-
         public BookRL(IConfiguration config)
         {
             this.config = config;
@@ -63,7 +62,6 @@ namespace RepositoryLayer.Services
                         newUser.UserId = UserId;
                         return newUser;
                     }
-
                     else
                     {
                         return null;
@@ -80,6 +78,13 @@ namespace RepositoryLayer.Services
             }
         }
 
+        /// <summary>
+        /// Updates the book details.
+        /// </summary>
+        /// <param name="BookId">The book identifier.</param>
+        /// <param name="model">The model.</param>
+        /// <param name="UserId">The user identifier.</param>
+        /// <returns></returns>
         public BookResponse UpdateBookDetails(long BookId, BookUpdate model, long UserId )
         {
             try
@@ -129,6 +134,13 @@ namespace RepositoryLayer.Services
             }
 
         }
+
+        /// <summary>
+        /// Gets the book with book identifier.
+        /// </summary>
+        /// <param name="bookId">The book identifier.</param>
+        /// <param name="jwtUserId">The JWT user identifier.</param>
+        /// <returns></returns>
         public BookResponse GetBookWithBookId(long bookId, long jwtUserId)
         {
             try
@@ -139,14 +151,15 @@ namespace RepositoryLayer.Services
 
                 this.sqlConnection.Open();
                 command.Parameters.AddWithValue("@BookId", bookId);
-                command.Parameters.AddWithValue("@UserId", jwtUserId
-                );
+                command.Parameters.AddWithValue("@UserId", jwtUserId);
                  SqlDataReader reader = command.ExecuteReader();
-            
+                // HasRows Gets a value that indicates whether the SqlDataReader contains one or more rows.
+
                 if (reader.HasRows)
                 {
                     while (reader.Read())
                     {
+                        // Reads next record in the data reader.
                         responseModel.BookId = Convert.ToInt32(reader["BookId"]);
                         responseModel.BookName = reader["BookName"].ToString();
                         responseModel.BookAuthor = reader["BookAuthor"].ToString();
@@ -173,7 +186,12 @@ namespace RepositoryLayer.Services
             }
         }
 
-
+        /// <summary>
+        /// Gets the with book identifier...using this method for specific ID in other methods like Update.
+        /// </summary>
+        /// <param name="bookId">The book identifier.</param>
+        /// <param name="jwtUserId">The JWT user identifier.</param>
+        /// <returns></returns>
         public BookResponse GetWithBookId(long bookId, long jwtUserId)
         {
             try
@@ -186,9 +204,10 @@ namespace RepositoryLayer.Services
                 command.Parameters.AddWithValue("@BookId", bookId);
                 command.Parameters.AddWithValue("@UserId", jwtUserId);
                 SqlDataReader reader = command.ExecuteReader();
-
+                // HasRows Gets a value that indicates whether the SqlDataReader contains one or more rows.
                 if (reader.HasRows)
                 {
+                   // Reads next record in the data reader.
                     while (reader.Read())
                     {
                         responseModel.BookId = Convert.ToInt32(reader["BookId"]);
@@ -217,6 +236,7 @@ namespace RepositoryLayer.Services
             }
 
         }
+
         /// <summary>
         /// Images the update.
         /// </summary>
@@ -260,6 +280,14 @@ namespace RepositoryLayer.Services
                 throw new KeyNotFoundException(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Ratingses the update.
+        /// </summary>
+        /// <param name="bookId">The book identifier.</param>
+        /// <param name="model">The model.</param>
+        /// <param name="jwtUserId">The JWT user identifier.</param>
+        /// <returns></returns>
         public BookResponse RatingsUpdate(long bookId, RatingUpdate model, long jwtUserId)
         {
             try
@@ -288,6 +316,12 @@ namespace RepositoryLayer.Services
                 throw;
             }
         }
+
+        /// <summary>
+        /// Gets all book.
+        /// </summary>
+        /// <param name="UserId">The user identifier.</param>
+        /// <returns></returns>
         public List<BookResponse> GetAllBook(long UserId)
         {
             try
@@ -330,6 +364,13 @@ namespace RepositoryLayer.Services
                 this.sqlConnection.Close();
             }
         }
+
+        /// <summary>
+        /// Deletets the with book identifier.
+        /// </summary>
+        /// <param name="bookId">The book identifier.</param>
+        /// <param name="UserId">The user identifier.</param>
+        /// <returns></returns>
         public bool DeletetWithBookId(long bookId, long UserId)
         {
             try
@@ -359,7 +400,5 @@ namespace RepositoryLayer.Services
                 this.sqlConnection.Close();
             }
         }
-
-
     }
 }
