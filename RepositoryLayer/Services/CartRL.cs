@@ -159,7 +159,79 @@ namespace RepositoryLayer.Services
                 throw;
             }
         }
+        public bool DeletetWithCartId(long CartId, long UserId)
+        {
+            try
+            {
+                SqlCommand command = new("SP_DeleteBookFromCartwithCartId", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@CartId", CartId);
+                command.Parameters.AddWithValue("@UserId", UserId);
+
+                this.sqlConnection.Open();
+                int result = command.ExecuteNonQuery();
+                if (result >= 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+        public List<CartResponse> GetAllCart(long UserId)
+        {
+            try
+            {
+                List<CartResponse> responseModel = new();
+                SqlCommand command = new("SP_GetAllCartDetails", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                this.sqlConnection.Open();
+                command.Parameters.AddWithValue("@UserId", UserId);
+                SqlDataAdapter dataAdapter = new(command);
+                DataTable dataTable = new();
+                dataAdapter.Fill(dataTable);
+                foreach (DataRow dataRow in dataTable.Rows)
+                {
+                    responseModel.Add(new CartResponse
+                    {
+                             CartId = Convert.ToInt32(dataRow["CartId"]),
+                             Quantity = Convert.ToInt32(dataRow["Quantity"] == DBNull.Value ? default : dataRow["Quantity"]),
+                             BookId = Convert.ToInt32(dataRow["BookId"]),
+                             UserId = Convert.ToInt32(dataRow["UserId"]),
+                             BookName = dataRow["BookName"].ToString(),
+                             BookAuthor = dataRow["BookAuthor"].ToString(),
+                             OriginalPrice = Convert.ToInt32(dataRow["OriginalPrice"] == DBNull.Value ? default : dataRow["OriginalPrice"]),
+                             DiscountPrice = Convert.ToInt32(dataRow["DiscountPrice"] == DBNull.Value ? default : dataRow["DiscountPrice"]),
+                             BookImage = dataRow["BookImage"].ToString(),
+                             BookDetails = dataRow["BookDetails"].ToString(),
+                    }
+                    );
+                }
+                return responseModel;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
     }
 }
+
+
 
 

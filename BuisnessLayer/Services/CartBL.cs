@@ -40,6 +40,29 @@ namespace BuisnessLayer.Services
             }
 
         }
+        public bool DeletetWithCartId(long CartId, long UserId)
+        {
+            try
+            {
+                return this.CartRL.DeletetWithCartId(CartId,UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+        public List<CartResponse> GetAllCart(long UserId)
+        {
+            try
+            {
+                return this.CartRL.GetAllCart(UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
 
 
 

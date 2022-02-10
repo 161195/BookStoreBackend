@@ -61,5 +61,45 @@ namespace BookStoreApplication.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        [HttpDelete("{CartId}")]
+        public IActionResult BookDelete(long CartId)
+        {
+            try
+            {
+                long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
+                bool book = BL.DeletetWithCartId(CartId, UserId);
+                if (book == false)
+                {
+                    return NotFound(new { Success = false, message = "Invalid CartId" });
+                }
+
+                return Ok(new { Success = true, message = "Book deleted successfully from cart ", book });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+        [HttpGet]
+        public IActionResult GetAllCarts()
+        {
+            try
+            {
+                long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
+                List<CartResponse> cart = BL.GetAllCart(UserId);
+                if (cart == null)
+                {
+                    return NotFound(new { Success = false, message = "Invalid" });
+                }
+
+                return Ok(new { Success = true, message = "Retrived Cart successfully ", cart });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
+
     }
 }
