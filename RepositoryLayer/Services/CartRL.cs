@@ -56,8 +56,7 @@ namespace RepositoryLayer.Services
                             newCart.Quantity = model.Quantity;
                             newCart.UserId = UserId;
                             return newCart;
-                        }                      
-                     
+                        }                                        
                     }
                 }
                 sqlConnection1.Close();
@@ -68,9 +67,99 @@ namespace RepositoryLayer.Services
                 throw;
             }
         }
+        public CartResponse GetCartWithId(long CartId, long UserId)
+        {
+            try
+            {
+                CartResponse responseModel = new();
+                SqlCommand command = new("SP_GetCartDetailsWithCartId", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
 
+                this.sqlConnection.Open();
+                command.Parameters.AddWithValue("@CartId", CartId);
+                command.Parameters.AddWithValue("@UserId", UserId);
+                SqlDataReader reader = command.ExecuteReader();
 
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        responseModel.CartId = Convert.ToInt32(reader["CartId"]);
+                        responseModel.Quantity = Convert.ToInt32(reader["Quantity"] == DBNull.Value ? default : reader["Quantity"]);
+                        responseModel.BookId = Convert.ToInt32(reader["BookId"]);                
+                        responseModel.UserId = Convert.ToInt32(reader["UserId"]);
+                        responseModel.BookName = reader["BookName"].ToString();
+                        responseModel.BookAuthor = reader["BookAuthor"].ToString();                      
+                        responseModel.OriginalPrice = Convert.ToInt32(reader["OriginalPrice"] == DBNull.Value ? default : reader["OriginalPrice"]);
+                        responseModel.DiscountPrice = Convert.ToInt32(reader["DiscountPrice"] == DBNull.Value ? default : reader["DiscountPrice"]);
+                        responseModel.BookImage = reader["BookImage"].ToString();                     
+                        responseModel.BookDetails = reader["BookDetails"].ToString();
+                
+                    }
+                    return responseModel;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+        public CartResponse UpdateCart(long CartId, CartModel model, long UserId)
+        {
+            try
+            {
+                SqlConnection sqlConnection1 = new(connectionString);
+                string query = "select UserId from UserTable where UserId=@UserId ";
+                SqlCommand validateCommand = new(query, sqlConnection1);
+                ValidationOfIdForCart validationModel = new();
 
+                sqlConnection1.Open();
+                validateCommand.Parameters.AddWithValue("@UserId", UserId);
+                SqlDataReader reader = validateCommand.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        validationModel.UserId = Convert.ToInt32(reader["UserId"]);
+                    }
+                    using (sqlConnection)
+                    {
+                        SqlCommand command = new("SP_UpdateCart", sqlConnection);
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.AddWithValue("@CartId", CartId);
+                        command.Parameters.AddWithValue("@Quantity", model.Quantity);
+                        command.Parameters.AddWithValue("@UserId", UserId);
+                        this.sqlConnection.Open();
+                        int result = command.ExecuteNonQuery();
+                        this.sqlConnection.Close();
+                        if (result >= 0)
+                        {
+                            UpdateCartResponse response = new()
+                            {
+                                BookId = validationModel.BookId,
+                                Quantity = model.Quantity,
+                                UserId = validationModel.UserId
+                            };
+                            return GetCartWithId(CartId,UserId);
+                        }
+                    }
+                }
+                sqlConnection1.Close();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
-
 }
+
+

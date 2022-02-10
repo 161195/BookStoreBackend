@@ -8,7 +8,7 @@ namespace CommonLayer.CartModel
 {
     public class CartResponse
     {
-        public string CartId { get; set; }
+        public long CartId { get; set; }
         public long BookId { get; set; }
         public long UserId { get; set; }
         public long Quantity { get; set; }

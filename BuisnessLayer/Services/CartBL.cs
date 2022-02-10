@@ -28,7 +28,20 @@ namespace BuisnessLayer.Services
             }
 
         }
+        public CartResponse UpdateCart(long CartId, CartModel model, long UserId)
+        {
+            try
+            {
+                return this.CartRL.UpdateCart(CartId, model, UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
 
-        
+        }
+
+
+
     }
 }

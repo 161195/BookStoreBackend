@@ -10,6 +10,8 @@ namespace BuisnessLayer.Interfaces
     public interface ICartBL
     {
         public AddToCartResponse AddToCart(long BookId, CartModel model, long UserId);
+        public CartResponse UpdateCart(long CartId, CartModel model, long UserId);
+
 
     }
 }
