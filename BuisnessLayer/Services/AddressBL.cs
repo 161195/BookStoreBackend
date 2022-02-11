@@ -53,5 +53,17 @@ namespace BuisnessLayer.Services
             }
 
         }
+        public bool DeletetWithWAddressId(long AddressId, long UserId)
+        {
+            try
+            {
+                return this.AddressRL.DeletetWithWAddressId(AddressId,UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
     }
 }

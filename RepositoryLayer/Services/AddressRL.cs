@@ -200,5 +200,36 @@ namespace RepositoryLayer.Services
                 throw;
             }
         }
+        
+        public bool DeletetWithWAddressId(long AddressId, long UserId)
+        {
+            try
+            {
+                SqlCommand command = new("SP_DeleteAddressWithAddressId", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@AddressId", AddressId);
+                command.Parameters.AddWithValue("@UserId", UserId);
+
+                this.sqlConnection.Open();
+                int result = command.ExecuteNonQuery();
+                if (result >= 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+
     }
 }

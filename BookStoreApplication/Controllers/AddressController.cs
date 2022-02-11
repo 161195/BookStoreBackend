@@ -80,6 +80,25 @@ namespace BookStoreApplication.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+        [HttpDelete("{AddressId}")]
+        public IActionResult AddressDelete(long AddressId)
+        {
+            try
+            {
+                long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
+                bool Address = BL.DeletetWithWAddressId(AddressId, UserId);
+                if (Address == false)
+                {
+                    return NotFound(new { Success = false, message = "Invalid AddressId" });
+                }
+
+                return Ok(new { Success = true, message = "Address deleted successfully.", Address });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
 
     }
 }
