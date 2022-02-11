@@ -71,6 +71,65 @@ namespace RepositoryLayer.Services
                 throw;
             }
         }
+        public List<GetBackAllFeedback> GetAllWishList(long BookId, long UserId)
+        {
+            try
+            {
+                SqlConnection sqlConnection1 = new(connectionString);
+                string query = "select BookId,UserId from FeedBackTable where BookId=@BookId and UserId=@UserId ";
+                SqlCommand validateCommand = new(query, sqlConnection1);
+                ValidationOfIdForCart validationModel = new();
 
+                sqlConnection1.Open();
+                validateCommand.Parameters.AddWithValue("@BookId", BookId);
+                validateCommand.Parameters.AddWithValue("@UserId", UserId);
+                SqlDataReader reader = validateCommand.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        validationModel.BookId = Convert.ToInt32(reader["BookId"]);
+                        validationModel.UserId = Convert.ToInt32(reader["UserId"]);
+                    }
+                    List<GetBackAllFeedback> responseModel = new();
+                    SqlCommand command = new("SP_GetAllFeedback", sqlConnection);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    this.sqlConnection.Open();
+                    command.Parameters.AddWithValue("@BookId", BookId);
+                    command.Parameters.AddWithValue("@UserId", UserId);
+                    SqlDataAdapter dataAdapter = new(command);
+                    DataTable dataTable = new();
+                    dataAdapter.Fill(dataTable);
+                    foreach (DataRow dataRow in dataTable.Rows)
+                    {
+                        responseModel.Add(
+                             new GetBackAllFeedback
+                             {
+                                 FeedBackId = Convert.ToInt32(dataRow["FeedBackId"]),
+                                 BookId = Convert.ToInt32(dataRow["BookId"]),
+                                 UserId = Convert.ToInt32(dataRow["UserId"]),
+                                 FeedBack = dataRow["FeedBack"].ToString(),
+                                 Ratings = Convert.ToInt32(dataRow["Ratings"] == DBNull.Value ? default : dataRow["Ratings"]),
+                             }
+                         );
+                    }
+                    return responseModel;
+                }
+                sqlConnection1.Close();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
     }
+
 }
+

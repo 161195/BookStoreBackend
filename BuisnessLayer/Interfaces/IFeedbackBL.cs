@@ -10,5 +10,6 @@ namespace BuisnessLayer.Interfaces
     public interface IFeedbackBL
     {
         public AddFeedbackResponse AddingFeedback(long BookId, FeedbackModel model, long UserId);
+        public List<GetBackAllFeedback> GetAllWishList(long BookId, long UserId);
     }
 }

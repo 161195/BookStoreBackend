@@ -1,5 +1,5 @@
 ﻿using BuisnessLayer.Interfaces;
-using CommonLayer.FeedbackModel;
+using CommonLayer.AddressModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,49 +9,45 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace BookStoreApplication.Controllers
-{
-    [Authorize]
+{   [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class FeedbackController : ControllerBase
+    public class AddressController : ControllerBase
     {
-        private readonly IFeedbackBL BL;
-        public FeedbackController(IFeedbackBL BL)
+        IAddressBL BL;
+        public AddressController(IAddressBL BL)
         {
             this.BL = BL;
         }
-        [HttpPost("{BookId}/FeedBack")]
-        public IActionResult AddBooksToCart(long BookId,FeedbackModel model)
+        [HttpPost("{TypeId}")]
+        public IActionResult AddressAdd(long TypeId,AddressModel model)
         {
             try
             {
                 long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
-                AddFeedbackResponse Feedback = BL.AddingFeedback(BookId, model, UserId);
-                if (Feedback != null)
+                AddressResponse Address = BL.AddressAdding(TypeId, model, UserId);
+                if (Address == null)
                 {
-                    return this.Ok(new { Success = true, message = "Feedback added Successfully.", Feedback });
+                    return NotFound(new { Success = false, message = "Invalid TypeId" });
                 }
-                else
-                {
-                    return this.BadRequest(new { Success = false, message = "Feedback has not been added on book." });
-                }
+
+                return Ok(new { Success = true, message = "Address added successfully ", Address });
             }
             catch (Exception ex)
             {
-                return this.BadRequest(new { success = false, message = ex.InnerException, msg = ex.Message });
+                return NotFound(new { message = ex.Message });
             }
         }
-
-        [HttpGet("{BookId}")]
-        public IActionResult GettingAllFeedbacks(long BookId)
+        [HttpGet()]
+        public IActionResult GettingAddressOfUser()
         {
             try
             {
                 long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
-                List<GetBackAllFeedback> Feedback = BL.GetAllWishList(BookId,UserId);
-                if (Feedback != null)
+                List<AddressResponse> address = BL.GetAddress(UserId);
+                if (address != null)
                 {
-                    return this.Ok(new { Success = true, message = "Feedback fetched Successfully.", Feedback });
+                    return this.Ok(new { Success = true, message = "Address fetched Successfully.", address });
                 }
                 else
                 {
@@ -63,5 +59,6 @@ namespace BookStoreApplication.Controllers
                 return this.BadRequest(new { success = false, message = ex.InnerException, msg = ex.Message });
             }
         }
+
     }
 }

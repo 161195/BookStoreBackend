@@ -1,5 +1,5 @@
 ﻿using BuisnessLayer.Interfaces;
-using CommonLayer.FeedbackModel;
+using CommonLayer.AddressModel;
 using RepositoryLayer.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,29 +9,31 @@ using System.Threading.Tasks;
 
 namespace BuisnessLayer.Services
 {
-    public class FeedbackBL : IFeedbackBL
+    public class AddressBL : IAddressBL
     {
-        private readonly IFeedbackRL feedbackRL;
-        public FeedbackBL(IFeedbackRL feedbackRL)
+        IAddressRL AddressRL;
+        public AddressBL(IAddressRL addressRL)
         {
-            this.feedbackRL = feedbackRL;
+            this.AddressRL = addressRL;
         }
-        public AddFeedbackResponse AddingFeedback(long BookId, FeedbackModel model, long UserId)
+
+        public AddressResponse AddressAdding(long TypeId, AddressModel model, long UserId)
         {
             try
             {
-                return this.feedbackRL.AddingFeedback(BookId, model, UserId);
+                return this.AddressRL.AddressAdding(TypeId, model, UserId);
             }
             catch (Exception ex)
             {
                 throw;
             }
+
         }
-        public List<GetBackAllFeedback> GetAllWishList(long BookId, long UserId)
+        public List<AddressResponse> GetAddress(long UserId)
         {
             try
             {
-                return this.feedbackRL.GetAllWishList(BookId, UserId);
+                return this.AddressRL.GetAddress(UserId);
             }
             catch (Exception ex)
             {

@@ -10,5 +10,6 @@ namespace RepositoryLayer.Interfaces
     public interface IFeedbackRL
     {
         public AddFeedbackResponse AddingFeedback(long BookId, FeedbackModel model, long UserId);
+        public List<GetBackAllFeedback> GetAllWishList(long BookId, long UserId);
     }
 }
