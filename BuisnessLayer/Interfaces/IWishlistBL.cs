@@ -8,5 +8,7 @@ namespace BuisnessLayer.Interfaces
 {
     public interface IWishlistBL
     {
+        public bool AddToWishlist(long BookId, long UserId);
+
     }
 }

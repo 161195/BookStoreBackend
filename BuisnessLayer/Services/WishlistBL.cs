@@ -15,5 +15,18 @@ namespace BuisnessLayer.Services
         {
             this.WishlistRL = wishlistRL;
         }
+        public bool AddToWishlist(long BookId, long UserId)
+        {
+            try
+            {
+                return this.WishlistRL.AddToWishlist(BookId,UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
     }
 }
