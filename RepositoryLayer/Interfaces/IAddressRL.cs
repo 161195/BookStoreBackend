@@ -12,5 +12,6 @@ namespace RepositoryLayer.Interfaces
     {
         public AddressResponse AddressAdding(long TypeId, AddressModel model, long UserId);
         public List<AddressResponse> GetAddress(long UserId);
+        public AddressUpdateResponse AddressEdit(long AddressId, UpdateModel model, long UserId);
     }
 }

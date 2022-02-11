@@ -41,5 +41,17 @@ namespace BuisnessLayer.Services
             }
 
         }
+        public AddressUpdateResponse AddressEdit(long AddressId, UpdateModel model, long UserId)
+        {
+            try
+            {
+                return this.AddressRL.AddressEdit (AddressId,model,UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
     }
 }

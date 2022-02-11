@@ -38,6 +38,7 @@ namespace BookStoreApplication.Controllers
                 return NotFound(new { message = ex.Message });
             }
         }
+
         [HttpGet()]
         public IActionResult GettingAddressOfUser()
         {
@@ -57,6 +58,26 @@ namespace BookStoreApplication.Controllers
             catch (Exception ex)
             {
                 return this.BadRequest(new { success = false, message = ex.InnerException, msg = ex.Message });
+            }
+        }
+
+        [HttpPut("{AddressId}")]
+        public IActionResult AddressEditing(long AddressId, UpdateModel model)
+        {
+            try
+            {
+                long UserId = Convert.ToInt32(User.Claims.FirstOrDefault(e => e.Type == "UserId").Value);
+                AddressUpdateResponse Address = BL.AddressEdit(AddressId, model, UserId);
+                if (Address == null)
+                {
+                    return NotFound(new { Success = false, message = "Invalid AddressId" });
+                }
+
+                return Ok(new { Success = true, message = "Address Updated successfully ", Address });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
             }
         }
 

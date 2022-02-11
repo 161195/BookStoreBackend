@@ -113,5 +113,92 @@ namespace RepositoryLayer.Services
             }
 
         }
+        public AddressUpdateResponse GetWithAddressId(long AddressId, long UserId)
+        {
+            try
+            {
+                AddressUpdateResponse responseModel = new();
+                SqlCommand command = new("spGetAddressWithAddressId", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                this.sqlConnection.Open();
+                command.Parameters.AddWithValue("@AddressId", AddressId);
+                command.Parameters.AddWithValue("@UserId", UserId);
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        responseModel.AddressId = Convert.ToInt32(reader["AddressId"]);
+                        responseModel.TypeId = Convert.ToInt32(reader["TypeId"]);
+                        responseModel.FullName = reader["FullName"].ToString();
+                        responseModel.FullAddress = reader["FullAddress"].ToString();
+                        responseModel.City = reader["City"].ToString();
+                        responseModel.State = reader["State"].ToString();
+                        responseModel.UserId = Convert.ToInt32(reader["UserId"]);
+
+                    }
+                    return responseModel;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+        public AddressUpdateResponse AddressEdit(long AddressId, UpdateModel model, long UserId)
+        {
+            try
+            {
+                SqlConnection sqlConnection1 = new(connectionString);
+                string query = "select UserId from UserTable where UserId=@UserId ";
+                SqlCommand validateCommand = new(query, sqlConnection1);
+                ValidationOfIdForCart validationModel = new();
+
+                sqlConnection1.Open();
+                validateCommand.Parameters.AddWithValue("@UserId", UserId);
+                SqlDataReader reader = validateCommand.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        validationModel.UserId = Convert.ToInt32(reader["UserId"]);
+                    }
+                    using (sqlConnection)
+                    {
+                        SqlCommand command = new("SP_UpdateAddress", sqlConnection);
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.AddWithValue("@AddressId", AddressId);
+                        command.Parameters.AddWithValue("@TypeId", model.TypeId);
+                        command.Parameters.AddWithValue("@FullName", model.FullName);
+                        command.Parameters.AddWithValue("@FullAddress", model.FullAddress);
+                        command.Parameters.AddWithValue("@City", model.City);
+                        command.Parameters.AddWithValue("@State", model.State);
+                        command.Parameters.AddWithValue("@UserId", UserId);
+                  
+                        this.sqlConnection.Open();
+                        int result = command.ExecuteNonQuery();
+                        this.sqlConnection.Close();
+                        if (result >= 0)
+                        {                          
+                            return GetWithAddressId(AddressId, UserId);
+                        }
+                    }
+                }
+                sqlConnection1.Close();
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 }
