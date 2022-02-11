@@ -1,4 +1,5 @@
 ﻿using BuisnessLayer.Interfaces;
+using CommonLayer.WishlistModel;
 using RepositoryLayer.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,32 @@ namespace BuisnessLayer.Services
             {
                 throw;
             }
+        }
+        public List<WishlistResponse> GetAllWishList(long UserId)
+        {
+            try
+            {
+                return this.WishlistRL.GetAllWishList(UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
 
         }
+        public bool DeletetWithWishlistId(long WishListId, long UserId)
+        {
+            try
+            {
+                return this.WishlistRL.DeletetWithWishlistId(WishListId,UserId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        }
+
 
     }
 }

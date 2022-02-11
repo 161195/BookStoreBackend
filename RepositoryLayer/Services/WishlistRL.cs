@@ -1,4 +1,5 @@
 ﻿using CommonLayer.CartModel;
+using CommonLayer.WishlistModel;
 using RepositoryLayer.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -63,6 +64,76 @@ namespace RepositoryLayer.Services
             }
 
         }
+        public List<WishlistResponse> GetAllWishList(long UserId)
+        {
+            try
+            {
+                List<WishlistResponse> responseModel = new();
+                SqlCommand command = new("SP_GetAllWishList", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
 
-     }
+                this.sqlConnection.Open();
+                command.Parameters.AddWithValue("@UserId", UserId);
+                SqlDataAdapter dataAdapter = new(command);
+                DataTable dataTable = new();
+                dataAdapter.Fill(dataTable);
+                foreach (DataRow dataRow in dataTable.Rows)
+                {
+                    responseModel.Add(
+                         new WishlistResponse
+                         {
+                             WishListId = Convert.ToInt32(dataRow["WishListId"]),
+                             BookId = Convert.ToInt32(dataRow["BookId"]),
+                             UserId = Convert.ToInt32(dataRow["UserId"]),
+                             BookName = dataRow["BookName"].ToString(),
+                             BookAuthor = dataRow["BookAuthor"].ToString(),
+                             OriginalPrice = Convert.ToInt32(dataRow["OriginalPrice"] == DBNull.Value ? default : dataRow["OriginalPrice"]),
+                             DiscountPrice = Convert.ToInt32(dataRow["DiscountPrice"] == DBNull.Value ? default : dataRow["DiscountPrice"]),
+                             BookImage = dataRow["BookImage"].ToString(),
+                             BookDetails = dataRow["BookDetails"].ToString(),
+                         }
+                     );
+                }
+                return responseModel;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+        public bool DeletetWithWishlistId(long WishListId, long UserId)
+        {
+            try
+            {
+                SqlCommand command = new("SP_DeleteBookFromWishListwithId", sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@WishListId", WishListId);
+                command.Parameters.AddWithValue("@UserId", UserId);
+
+                this.sqlConnection.Open();
+                int result = command.ExecuteNonQuery();
+                if (result >= 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                this.sqlConnection.Close();
+            }
+        }
+
+    }
 }
