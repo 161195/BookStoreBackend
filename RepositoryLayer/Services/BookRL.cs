@@ -38,7 +38,6 @@ namespace RepositoryLayer.Services
             {
                 using (sqlConnection)
                 {
-
                     SqlCommand command = new SqlCommand("spCreateBook", this.sqlConnection);
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.AddWithValue("@BookName", bookDetails.BookName);
@@ -49,6 +48,7 @@ namespace RepositoryLayer.Services
                     command.Parameters.AddWithValue("@BookDetails", bookDetails.BookDetails);
                     command.Parameters.AddWithValue("@UserId", UserId);
                     sqlConnection.Open();
+                    //ExecuteNonQuery returns the number of rows affected
                     int result = command.ExecuteNonQuery();
                     if (result >= 0)
                     {
